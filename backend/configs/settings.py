@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'authtools',
+    'rest_framework',
     'accounts.apps.AccountsConfig',
 ]
 
@@ -70,6 +71,11 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 50
+}
 
 WSGI_APPLICATION = 'configs.wsgi.application'
 
