@@ -4,4 +4,4 @@ from django.db import models
 
 
 class User(AbstractNamedUser):
-    pass
+    EMAIL_FIELD = 'email'
