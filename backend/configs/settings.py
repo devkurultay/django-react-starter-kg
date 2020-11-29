@@ -176,5 +176,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
-
+SWAGGER_SETTINGS = {
+    'LOGIN_URL': '/admin/login/',
+    'LOGOUT_URL': '/admin/logout/'
+}
