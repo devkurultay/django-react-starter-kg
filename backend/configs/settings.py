@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'authtools',
     'rest_framework',
     'rest_framework.authtoken',
+    'phonenumber_field',
     'accounts.apps.AccountsConfig',
     'dj_rest_auth',
     'allauth',
@@ -96,9 +97,13 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 50,
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.JSONParser',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 
@@ -114,7 +119,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 }
 
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'accounts.serializers.NamedEmailUserDetailsSerializer',
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.EmailUserDetailsSerializer',
 }
 
 # Change this in prod
@@ -177,6 +182,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 SWAGGER_SETTINGS = {
-    'LOGIN_URL': '/admin/login/',
-    'LOGOUT_URL': '/admin/logout/'
+    'LOGIN_URL': '/auth/login/',
+    'LOGOUT_URL': '/auth/logout/',
+    'exclude_namespaces': ['sw']
 }

@@ -9,15 +9,20 @@ from allauth.account.utils import user_email
 from allauth.account.utils import user_field
 from allauth.account import app_settings as allauth_settings
 
+from phonenumber_field.serializerfields import PhoneNumberField
+
 from .models import User
 
 
 class RegisterUserSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=255, required=False)
+    first_name = serializers.CharField(max_length=255, required=False)
+    last_name = serializers.CharField(max_length=255, required=False)
+    phone = PhoneNumberField(max_length=255, required=False)
     email = serializers.EmailField(max_length=255)
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
 
+    # TODO(murat): Add phone number validation. It should be unique
     def validate_email(self, email):
         email = get_adapter().clean_email(email)
         if allauth_settings.UNIQUE_EMAIL:
@@ -28,6 +33,13 @@ class RegisterUserSerializer(serializers.Serializer):
 
     def validate_password1(self, password):
         return get_adapter().clean_password(password)
+    
+    def validate_phone(self, phone):
+        phone.is_valid()
+        if User.objects.filter(phone__iexact=phone.as_e164).exists():
+            raise serializers.ValidationError(
+                _("A user is already registered with this phone number."))
+        return phone
 
     def validate(self, data):
         if data['password1'] != data['password2']:
@@ -36,18 +48,26 @@ class RegisterUserSerializer(serializers.Serializer):
 
     def get_cleaned_data(self):
         return {
-            'name': self.validated_data.get('name', ''),
+            'first_name': self.validated_data.get('first_name', ''),
+            'last_name': self.validated_data.get('last_name', ''),
+            'phone': self.validated_data.get('phone', ''),
             'password1': self.validated_data.get('password1', ''),
             'email': self.validated_data.get('email', '')
         }
 
     def save_user(self, request, user, form):
         data = form.cleaned_data
-        name = data.get('name')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        phone = data.get('phone')
         email = data.get('email')
         user_email(user, email)
-        if name:
-            user_field(user, 'name', name)
+        if first_name:
+            user_field(user, 'first_name', first_name)
+        if last_name:
+            user_field(user, 'last_name', last_name)
+        if phone:
+            user_field(user, 'phone', phone.as_e164)
         if 'password1' in data:
             user.set_password(data['password1'])
         else:
@@ -64,12 +84,14 @@ class RegisterUserSerializer(serializers.Serializer):
         return user
 
 
-class NamedEmailUserDetailsSerializer(serializers.ModelSerializer):
+class EmailUserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
             'pk',
             'email',
-            'name',
+            'first_name',
+            'last_name',
+            'phone',
         )
         read_only_fields = ('pk',)
