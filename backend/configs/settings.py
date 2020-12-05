@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'authtools',
     'rest_framework',
     'rest_framework.authtoken',
+    'phonenumber_field',
     'accounts.apps.AccountsConfig',
     'dj_rest_auth',
     'allauth',
@@ -98,7 +99,6 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 
@@ -114,7 +114,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 }
 
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'accounts.serializers.NamedEmailUserDetailsSerializer',
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.EmailUserDetailsSerializer',
 }
 
 # Change this in prod
