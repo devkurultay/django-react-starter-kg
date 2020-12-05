@@ -33,9 +33,15 @@ class RegisterUserSerializer(serializers.Serializer):
 
     def validate_password1(self, password):
         return get_adapter().clean_password(password)
+    
+    def validate_phone(self, phone):
+        phone.is_valid()
+        if User.objects.filter(phone__iexact=phone.as_e164).exists():
+            raise serializers.ValidationError(
+                _("A user is already registered with this phone number."))
+        return phone
 
     def validate(self, data):
-        data['phone'].is_valid()
         if data['password1'] != data['password2']:
             raise serializers.ValidationError(_("The two password fields didn't match."))
         return data
