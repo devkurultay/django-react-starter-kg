@@ -37,17 +37,26 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'authtools',
     'rest_framework',
     'rest_framework.authtoken',
     'accounts.apps.AccountsConfig',
     'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'rest_framework_swagger',
+
+
+    # Allauth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'dj_rest_auth.registration',
-    'rest_framework_swagger',
+    'django.contrib.sites',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+
+
+    
+    
 ]
 
 MIDDLEWARE = [
@@ -108,6 +117,8 @@ AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of allauth
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+
 
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'accounts.serializers.RegisterUserSerializer',
@@ -176,7 +187,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
 SWAGGER_SETTINGS = {
     'LOGIN_URL': '/admin/login/',
     'LOGOUT_URL': '/admin/logout/'
 }
+
+LOGIN_REDIRECT_URL = "/"
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook': {
+        'LOCALE_FUNC': lambda request: 'en_US'
+    }
+}
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
